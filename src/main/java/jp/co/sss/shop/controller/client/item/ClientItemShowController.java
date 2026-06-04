@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 
-/**
- * めいんから
- */
 
 /**
  * 商品管理 一覧表示機能(一般会員用)のコントローラクラス
