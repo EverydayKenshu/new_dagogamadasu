@@ -16,6 +16,10 @@ import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.util.Constant;
 
 /**
+ * 
+ */
+
+/**
  * 商品管理 削除機能のコントローラクラス
  *
  * @author SystemShared
