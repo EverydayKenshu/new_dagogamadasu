@@ -12,6 +12,7 @@ import jp.co.sss.shop.service.BeanTools;
 
 /**
  * 私は編集しています
+ * マージマジ
  */
 
 
