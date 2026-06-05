@@ -27,6 +27,8 @@ import jp.co.sss.shop.repository.UserRepository;
  */
 @Controller
 public class AdminUserRegistController {
+	
+	// 編集しました
 
 	/**
 	 * 会員情報　リポジトリ
