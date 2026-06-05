@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 
-
 /**
- * 私は編集しています
- * マージマジ
+ * 
  */
 
 
