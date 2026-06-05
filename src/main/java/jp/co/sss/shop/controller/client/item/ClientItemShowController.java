@@ -11,7 +11,7 @@ import jp.co.sss.shop.service.BeanTools;
 
 
 /**
- * 編集したよ
+ * 私は編集しています
  */
 
 
@@ -30,6 +30,7 @@ public class ClientItemShowController {
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
+	 * 
 	 */
 	@Autowired
 	BeanTools beanTools;
