@@ -9,6 +9,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import jp.co.sss.shop.repository.ItemRepository;
 import jp.co.sss.shop.service.BeanTools;
 
+
+/**
+ * 私は編集しています
+ * マージマジ
+ */
+
+
 /**
  * 商品管理 一覧表示機能(一般会員用)のコントローラクラス
  *
@@ -24,6 +31,7 @@ public class ClientItemShowController {
 
 	/**
 	 * Entity、Form、Bean間のデータコピーサービス
+	 * 
 	 */
 	@Autowired
 	BeanTools beanTools;
