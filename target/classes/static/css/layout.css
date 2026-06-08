@@ -147,7 +147,9 @@ header {
 }
 .navi_menu li {
 	display: inline-block;
-	width: 24%;
+/*	width: 24%; */
+/* お気に入り一覧追加のため24%->19%へ変更 */
+	width: 19%;
 }
 .navi_menu a {
 	display: inline-block;
