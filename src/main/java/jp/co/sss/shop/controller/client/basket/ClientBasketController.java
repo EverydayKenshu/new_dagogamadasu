@@ -20,6 +20,10 @@ import jp.co.sss.shop.repository.ItemRepository;
 @RequestMapping("/client/basket")
 public class ClientBasketController {
 
+	
+	/**
+	 * アイテム情報
+	 */
     @Autowired
     private ItemRepository itemRepository; 
 
