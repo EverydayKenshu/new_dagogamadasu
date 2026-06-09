@@ -71,9 +71,7 @@ public class ClientBasketController {
         return "client/basket/list";
     }
 
-    /**
-     * 2. 買い物かご商品追加
-     */
+    
     @SuppressWarnings("unchecked")
     @PostMapping("/add")
     public String addItem(@RequestParam Integer id, @RequestParam Integer orderNum, HttpSession session) {
