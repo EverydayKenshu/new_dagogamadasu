@@ -141,8 +141,9 @@ public class ClientOrderRegistController {
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.GET)
 	public String registCheck(Model model) {
 		OrderForm orderForm = (OrderForm) session.getAttribute("orderForm");
+
+		@SuppressWarnings("unchecked")
 		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basket");
-		
 		
 		if (orderForm == null || basket == null || basket.isEmpty()) {
 			return "redirect:/client/basket/list";
