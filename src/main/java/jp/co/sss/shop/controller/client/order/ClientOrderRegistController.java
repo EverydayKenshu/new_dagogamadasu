@@ -33,27 +33,50 @@ import jp.co.sss.shop.service.PriceCalc;
 @Controller
 public class ClientOrderRegistController {
 
+	/**
+	 * セッション
+	 */
 	@Autowired
 	HttpSession session;
 
 	@Autowired
 	ItemRepository itemRepository;
-
+	
+	/**
+	 * 注文情報
+	 */
 	@Autowired
 	OrderRepository orderRepository;
 
+	/**
+	 * 注文アイテム情報
+	 */
 	@Autowired
 	OrderItemRepository orderItemRepository;
 
+	/**
+	 * 会員情報 リポジトリ
+	 */
 	@Autowired
 	UserRepository userRepository;
 
+	/**
+	 * Entity、Form、Bean間のデータ生成、コピーサービス
+	 */
 	@Autowired
 	BeanTools beanTools;
 
+	/**
+	 * 合計金額計算サービス
+	 */
 	@Autowired
 	PriceCalc priceCalc;
 
+	/**
+	 * 住所入力画面　表示処理(POST)
+	 * 
+	 * @return "redirect:/client/order/address/input" 入力画面　表示
+	 */
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.POST)
 	public String registAdress() {
 
