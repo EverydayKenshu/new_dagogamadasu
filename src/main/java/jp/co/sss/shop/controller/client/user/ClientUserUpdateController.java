@@ -1,5 +1,6 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
@@ -28,18 +30,12 @@ public class ClientUserUpdateController {
 		//会員変更確認画面から戻る押下時はデータがあるためデータベースからの情報は持ってこない
 		if(session.getAttribute("userForm") == null) {
 			//セッションから現在ログインしている一般会員の情報を取得
-			User loginUser = (User)session.getAttribute("user");
+			UserBean userBean= (UserBean)session.getAttribute("user");
 			//repositoryから条件を検索
-			User user = userRepository.findByIdAndDeleteFlag(loginUser.getId(), 0);
+			User user = userRepository.findByIdAndDeleteFlag(userBean.getId(), 0);
 			//userFormにデータベースから取得した情報をセット
 			UserForm userForm = new UserForm();
-			userForm.setId(user.getId());
-			userForm.setEmail(user.getEmail());
-			userForm.setPassword(user.getPassword());
-			userForm.setName(user.getName());
-			userForm.setPostalCode(user.getPostalCode());
-			userForm.setAddress(user.getAddress());
-			userForm.setPhoneNumber(user.getPhoneNumber());
+			BeanUtils.copyProperties(user, userForm);
 			//セッションスコープに情報をセット
 			session.setAttribute("userForm", userForm);
 		}
