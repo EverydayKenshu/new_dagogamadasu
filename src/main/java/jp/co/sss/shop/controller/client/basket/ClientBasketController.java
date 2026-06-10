@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
@@ -21,7 +20,9 @@ public class ClientBasketController {
     @Autowired
     private ItemRepository itemRepository; 
 
-//    表示
+    /**
+     * 1. 買い物かご画面表示
+     */
     @SuppressWarnings("unchecked")
     @GetMapping("/client/basket/list")
     public String viewBasket(HttpSession session, Model model) {
@@ -73,10 +74,14 @@ public class ClientBasketController {
         return "client/basket/list";
     }
 
-//    追加
+    /**
+     * 2. 買い物かご商品追加
+     */
     @SuppressWarnings("unchecked")
     @PostMapping("/client/basket/add")
-    public String addItem(@RequestParam Integer id, @RequestParam Integer orderNum, HttpSession session) {
+    public String addItem(BasketBean beanFromForm, HttpSession session) {
+       
+        Integer id = beanFromForm.getId();
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
         if (basket == null) {
             basket = new ArrayList<>();
@@ -91,12 +96,12 @@ public class ClientBasketController {
         }
 
         if (existBean != null) {
-            int newOrderNum = existBean.getOrderNum() + orderNum;
+            int newOrderNum = existBean.getOrderNum() + 1; 
             existBean.setOrderNum(newOrderNum);
         } else {
             Item item = itemRepository.findByIdAndDeleteFlag(id, 0);
             if (item != null) {
-                BasketBean newBean = new BasketBean(id, item.getName(), item.getStock(), orderNum);
+                BasketBean newBean = new BasketBean(id, item.getName(), item.getStock(), 1);
                 basket.add(0, newBean); 
             }
         }
@@ -105,10 +110,13 @@ public class ClientBasketController {
         return "redirect:/client/basket/list";
     }
     
-//    削除
+    /**
+     * 3. 買い物かご商品削除
+     */
     @SuppressWarnings("unchecked")
-    @PostMapping("/client/basket/delete")
-    public String deleteItem(@RequestParam Integer id, HttpSession session) {
+    @PostMapping("/client/basket/delete") 
+    public String deleteItem(BasketBean beanFromForm, HttpSession session) { 
+        Integer id = beanFromForm.getId();
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
         if (basket == null) {
             return "redirect:/client/basket/list";
@@ -140,9 +148,12 @@ public class ClientBasketController {
         return "redirect:/client/basket/list";
     }
 
-//    全削除
-    @PostMapping("/basket/allDelete")
-    public String allDelete(HttpSession session) {
+    /**
+     * 4. 買い物かごを空にする
+     */
+    @PostMapping("/client/basket/allDelete") 
+    public String allDelete(HttpSession session) {      
+        
         session.removeAttribute("basketBeans");
         return "redirect:/client/basket/list";
     }
