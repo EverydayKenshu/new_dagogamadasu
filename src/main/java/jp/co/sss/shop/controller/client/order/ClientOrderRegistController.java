@@ -29,6 +29,11 @@ import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
 
+/**
+ * 注文管理 注文登録機能(一般会員向け用)のコントローラクラス
+ *
+ * @author SystemShared
+ */
 @Controller
 public class ClientOrderRegistController {
 
@@ -38,9 +43,12 @@ public class ClientOrderRegistController {
 	@Autowired
 	HttpSession session;
 
+	/**
+	 * アイテム情報
+	 */
 	@Autowired
 	ItemRepository itemRepository;
-	
+
 	/**
 	 * 注文情報
 	 */
@@ -72,9 +80,8 @@ public class ClientOrderRegistController {
 	PriceCalc priceCalc;
 
 	/**
-	 * 住所入力画面　表示処理(POST)
-	 * 
-	 * @return "redirect:/client/order/address/input" 入力画面　表示
+	 * 住所入力画面 表示処理(POST)
+	 * @return "redirect:/client/order/address/input"
 	 */
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.POST)
 	public String registAdress() {
@@ -97,6 +104,10 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/address/input";
 	}
 
+	/**
+	 * 住所入力画面 表示処理(GET)
+	 * @return "/client/order/address_input" または "redirect:/syserror"
+	 */
 	@RequestMapping(path = "/client/order/address/input", method = RequestMethod.GET)
 	public String registAddress(Model model) {
 
@@ -116,6 +127,10 @@ public class ClientOrderRegistController {
 		return "/client/order/address_input";
 	}
 
+	/**
+	 * 支払方法入力画面 遷移処理(POST)
+	 * @return "redirect:/client/order/payment/input" または "redirect:/client/order/address/input"
+	 */
 	@RequestMapping(path = "/client/order/payment/input", method = RequestMethod.POST)
 	public String registPaymentInput(@Valid @ModelAttribute OrderForm form, BindingResult result) {
 
@@ -135,6 +150,10 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/payment/input";
 	}
 
+	/**
+	 * 支払方法入力画面 表示処理(GET)
+	 * @return "/client/order/payment_input" または "redirect:/syserror"
+	 */
 	@RequestMapping(path = "/client/order/payment/input", method = RequestMethod.GET)
 	public String registPaymentInput(Model model) {
 		OrderForm orderForm = (OrderForm) session.getAttribute("orderForm");
@@ -146,6 +165,10 @@ public class ClientOrderRegistController {
 		return "/client/order/payment_input";
 	}
 
+	/**
+	 * 注文確認画面 遷移処理(POST)
+	 * @return "redirect:/client/order/check"
+	 */
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.POST)
 	public String registCheck(@ModelAttribute OrderForm form) {
 		OrderForm lastForm = (OrderForm) session.getAttribute("orderForm");
@@ -160,17 +183,21 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/check";
 	}
 
+	/**
+	 * 注文確認画面 表示処理(GET)
+	 * @return "/client/order/check" または "redirect:/client/basket/list"
+	 */
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.GET)
 	public String registCheck(Model model) {
 		OrderForm orderForm = (OrderForm) session.getAttribute("orderForm");
-		
+
 		@SuppressWarnings("unchecked")
 		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
-		
+
 		if (orderForm == null || basket == null || basket.isEmpty()) {
 			return "redirect:/client/basket/list";
 		}
-		
+
 		List<OrderItemBean> orderItemBeanList = new ArrayList<OrderItemBean>();
 		boolean stockChanged = false;
 
@@ -200,20 +227,24 @@ public class ClientOrderRegistController {
 		}
 
 		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(orderItemBeanList);
-		
+
 		model.addAttribute("orderForm", orderForm);
 		model.addAttribute("orderItemBeans", orderItemBeanList);
 		model.addAttribute("total", total);
 		return "/client/order/check";
 	}
 
+	/**
+	 * 注文完了処理(POST)
+	 * @return "redirect:/client/order/complete" または "redirect:/client/order/check"
+	 */
 	@RequestMapping(path = "/client/order/complete", method = RequestMethod.POST)
 	public String registComplete() {
-		
+
 		OrderForm orderForm = (OrderForm) session.getAttribute("orderForm");
 		@SuppressWarnings("unchecked")
 		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
-		
+
 		if (orderForm == null || basket == null || basket.isEmpty()) {
 			return "redirect:/client/basket/list";
 		}
@@ -275,6 +306,10 @@ public class ClientOrderRegistController {
 		return "redirect:/client/order/complete";
 	}
 
+	/**
+	 * 注文完了画面 表示処理(GET)
+	 * @return "/client/order/complete"
+	 */
 	@RequestMapping(path = "/client/order/complete", method = RequestMethod.GET)
 	public String registCompleteFinish() {
 		return "/client/order/complete";
