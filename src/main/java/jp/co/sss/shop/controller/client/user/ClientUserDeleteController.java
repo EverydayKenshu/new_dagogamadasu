@@ -1,5 +1,6 @@
 package jp.co.sss.shop.controller.client.user;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,9 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
+import jp.co.sss.shop.bean.UserBean;
 import jp.co.sss.shop.entity.User;
 import jp.co.sss.shop.form.UserForm;
 import jp.co.sss.shop.repository.UserRepository;
+import jp.co.sss.shop.util.Constant;
 
 @Controller
 public class ClientUserDeleteController {
@@ -19,15 +22,12 @@ public class ClientUserDeleteController {
 	@RequestMapping(path = "/client/user/delete/check", method = RequestMethod.POST)
 	public String userDeleteCheckPost(HttpSession session) {
 		//セッションから現在ログインしている一般会員の情報を取得
-		User loginUser = (User)session.getAttribute("user");
-		UserForm userForm = new UserForm();
-		userForm.setId(loginUser.getId());//会員番号
-		userForm.setName(loginUser.getName());//名前
-		userForm.setEmail(loginUser.getEmail());//メールアドレス
-		userForm.setPhoneNumber(loginUser.getPhoneNumber());//電話番号
-		userForm.setAddress(loginUser.getAddress());//住所
-		userForm.setPostalCode(loginUser.getPostalCode());//郵便番号
-		session.setAttribute("userForm", userForm);
+		UserBean userBean = (UserBean)session.getAttribute("user");
+		User user = userRepository.findByIdAndDeleteFlag(userBean.getId(), Constant.NOT_DELETED);
+	    // 退会対象の会員情報を取得
+	    UserForm userForm = new UserForm();
+	    BeanUtils.copyProperties(user, userForm);
+	    session.setAttribute("userForm", userForm);
 		return "redirect:/client/user/delete/check";
 	}
 	//セッションスコープから情報を取得し退会確認画面へと遷移させるメソッド
@@ -39,7 +39,7 @@ public class ClientUserDeleteController {
 		model.addAttribute("userForm", userForm);
 		return "client/user/delete_check";
 	}
-	
+
 	//退会確認画面で退会ボタン押下時にセッションスコープの内容を破棄
 	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.POST)
 	public String userDeleteComplete(HttpSession session) {
