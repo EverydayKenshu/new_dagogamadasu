@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jp.co.sss.shop.bean.BasketBean;
 import jp.co.sss.shop.bean.OrderItemBean;
@@ -164,14 +163,14 @@ public class ClientOrderRegistController {
 	@RequestMapping(path = "/client/order/check", method = RequestMethod.GET)
 	public String registCheck(Model model) {
 		OrderForm orderForm = (OrderForm) session.getAttribute("orderForm");
-
+		
 		@SuppressWarnings("unchecked")
-		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basket");
+		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
 		
 		if (orderForm == null || basket == null || basket.isEmpty()) {
 			return "redirect:/client/basket/list";
 		}
-
+		
 		List<OrderItemBean> orderItemBeanList = new ArrayList<OrderItemBean>();
 		boolean stockChanged = false;
 
@@ -201,22 +200,20 @@ public class ClientOrderRegistController {
 		}
 
 		int total = priceCalc.orderItemBeanPriceTotalUseSubtotal(orderItemBeanList);
-
+		
 		model.addAttribute("orderForm", orderForm);
-		model.addAttribute("orderItemBeanList", orderItemBeanList);
+		model.addAttribute("orderItemBeans", orderItemBeanList);
 		model.addAttribute("total", total);
-
 		return "/client/order/check";
 	}
 
 	@RequestMapping(path = "/client/order/complete", method = RequestMethod.POST)
-	@Transactional
 	public String registComplete() {
-
+		
 		OrderForm orderForm = (OrderForm) session.getAttribute("orderForm");
 		@SuppressWarnings("unchecked")
-		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basket");
-
+		List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
+		
 		if (orderForm == null || basket == null || basket.isEmpty()) {
 			return "redirect:/client/basket/list";
 		}
@@ -273,7 +270,7 @@ public class ClientOrderRegistController {
 
 		// セッション削除
 		session.removeAttribute("orderForm");
-		session.removeAttribute("basket");
+		session.removeAttribute("basketBeans");
 
 		return "redirect:/client/order/complete";
 	}
