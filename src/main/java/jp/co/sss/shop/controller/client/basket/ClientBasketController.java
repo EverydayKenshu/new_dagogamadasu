@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
@@ -17,56 +16,55 @@ import jp.co.sss.shop.entity.Item;
 import jp.co.sss.shop.repository.ItemRepository;
 
 @Controller
-@RequestMapping("/client/basket")
 public class ClientBasketController {
 
-	
-	/**
-	 * アイテム情報
-	 */
     @Autowired
     private ItemRepository itemRepository; 
 
-    
+//    表示
     @SuppressWarnings("unchecked")
-    @GetMapping("/list")
+    @GetMapping("/client/basket/list")
     public String viewBasket(HttpSession session, Model model) {
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
         if (basket == null) {
             basket = new ArrayList<>();
         }
 
-        List<String> itemNameListLessThan = new ArrayList<>();
         List<String> itemNameListZero = new ArrayList<>();
-        List<BasketBean> toRemove = new ArrayList<>();
+        List<String> itemNameListLessThan = new ArrayList<>();
+        List<BasketBean> toRemoveList = new ArrayList<>();
 
         for (BasketBean bean : basket) {
-        	Item item = itemRepository.findByIdAndDeleteFlag(bean.getId(), 0);
-            int currentStock = (item != null) ? item.getStock() : 0; 
+            Item item = itemRepository.findByIdAndDeleteFlag(bean.getId(), 0);
+            
+            int currentStock = 0;
+            if (item != null) {
+                currentStock = item.getStock();
+            }
             
             bean.setStock(currentStock);
 
             if (currentStock == 0) {
                 itemNameListZero.add(bean.getName());
-                toRemove.add(bean);
-            } else if (currentStock < bean.getOrderNum()) {
+                toRemoveList.add(bean);
+            } else if (bean.getOrderNum() > currentStock) {
                 itemNameListLessThan.add(bean.getName());
                 bean.setOrderNum(currentStock); 
             }
         }
 
-        for (BasketBean removeBean : toRemove) {
+        for (BasketBean removeBean : toRemoveList) {
             basket.remove(removeBean);
         }
 
-        if (!itemNameListZero.isEmpty()) {
+        if (itemNameListZero.isEmpty() == false) {
             model.addAttribute("itemNameListZero", itemNameListZero);
         }
-        if (!itemNameListLessThan.isEmpty()) {
+        if (itemNameListLessThan.isEmpty() == false) {
             model.addAttribute("itemNameListLessThan", itemNameListLessThan);
         }
 
-        if (basket.isEmpty()) {
+        if (basket.isEmpty() == true) {
             session.removeAttribute("basketBeans");
         } else {
             session.setAttribute("basketBeans", basket);
@@ -75,9 +73,9 @@ public class ClientBasketController {
         return "client/basket/list";
     }
 
-    
+//    追加
     @SuppressWarnings("unchecked")
-    @PostMapping("/add")
+    @PostMapping("/client/basket/add")
     public String addItem(@RequestParam Integer id, @RequestParam Integer orderNum, HttpSession session) {
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
         if (basket == null) {
@@ -93,10 +91,10 @@ public class ClientBasketController {
         }
 
         if (existBean != null) {
-            existBean.setOrderNum(existBean.getOrderNum() + orderNum);
+            int newOrderNum = existBean.getOrderNum() + orderNum;
+            existBean.setOrderNum(newOrderNum);
         } else {
-        
-        	Item item = itemRepository.findByIdAndDeleteFlag(id, 0);
+            Item item = itemRepository.findByIdAndDeleteFlag(id, 0);
             if (item != null) {
                 BasketBean newBean = new BasketBean(id, item.getName(), item.getStock(), orderNum);
                 basket.add(0, newBean); 
@@ -107,38 +105,43 @@ public class ClientBasketController {
         return "redirect:/client/basket/list";
     }
     
+//    削除
     @SuppressWarnings("unchecked")
-    @PostMapping("/delete")
+    @PostMapping("/client/basket/delete")
     public String deleteItem(@RequestParam Integer id, HttpSession session) {
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
-        
-        if (basket != null) {
-            BasketBean targetBean = null;
-            for (BasketBean bean : basket) {
-                if (bean.getId().equals(id)) {
-                    targetBean = bean;
-                    break;
-                }
-            }
+        if (basket == null) {
+            return "redirect:/client/basket/list";
+        }
 
-            if (targetBean != null) {
-                
-                if (targetBean.getOrderNum() > 1) {
-                    targetBean.setOrderNum(targetBean.getOrderNum() - 1);
-                } else {
-                    basket.remove(targetBean);
-                }
-            }
-            
-            if (basket.isEmpty()) {
-                session.removeAttribute("basketBeans");
-            } else {
-                session.setAttribute("basketBeans", basket);
+        BasketBean targetBean = null;
+        for (BasketBean bean : basket) { 
+            if (bean.getId().equals(id)) {
+                targetBean = bean;
+                break;
             }
         }
+
+        if (targetBean != null) {
+            if (targetBean.getOrderNum() > 1) {
+                int newOrderNum = targetBean.getOrderNum() - 1;
+                targetBean.setOrderNum(newOrderNum);
+            } else {
+                basket.remove(targetBean);
+            }
+        }
+        
+        if (basket.isEmpty() == true) {
+            session.removeAttribute("basketBeans");
+        } else {
+            session.setAttribute("basketBeans", basket);
+        }
+        
         return "redirect:/client/basket/list";
     }
-    @PostMapping("/allDelete")
+
+//    全削除
+    @PostMapping("/basket/allDelete")
     public String allDelete(HttpSession session) {
         session.removeAttribute("basketBeans");
         return "redirect:/client/basket/list";
