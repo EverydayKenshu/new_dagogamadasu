@@ -80,30 +80,25 @@ public class ClientBasketController {
     @SuppressWarnings("unchecked")
     @PostMapping("/client/basket/add")
     public String addItem(BasketBean beanFromForm, HttpSession session) {
-       
-        Integer id = beanFromForm.getId();
+        
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
         if (basket == null) {
             basket = new ArrayList<>();
         }
 
-        BasketBean existBean = null;
+      
         for (BasketBean bean : basket) {
-            if (bean.getId().equals(id)) {
-                existBean = bean;
-                break;
+            if (bean.getId().equals(beanFromForm.getId())) {
+                bean.setOrderNum(bean.getOrderNum() + 1);
+                session.setAttribute("basketBeans", basket);
+                return "redirect:/client/basket/list"; 
             }
         }
 
-        if (existBean != null) {
-            int newOrderNum = existBean.getOrderNum() + 1; 
-            existBean.setOrderNum(newOrderNum);
-        } else {
-            Item item = itemRepository.findByIdAndDeleteFlag(id, 0);
-            if (item != null) {
-                BasketBean newBean = new BasketBean(id, item.getName(), item.getStock(), 1);
-                basket.add(0, newBean); 
-            }
+        Item item = itemRepository.findByIdAndDeleteFlag(beanFromForm.getId(), 0);
+        if (item != null) {
+            BasketBean newBean = new BasketBean(beanFromForm.getId(), item.getName(), item.getStock(), 1);
+            basket.add(0, newBean); 
         }
 
         session.setAttribute("basketBeans", basket);
@@ -116,33 +111,32 @@ public class ClientBasketController {
     @SuppressWarnings("unchecked")
     @PostMapping("/client/basket/delete") 
     public String deleteItem(BasketBean beanFromForm, HttpSession session) { 
-        Integer id = beanFromForm.getId();
+        
         List<BasketBean> basket = (List<BasketBean>) session.getAttribute("basketBeans");
         if (basket == null) {
             return "redirect:/client/basket/list";
         }
 
-        BasketBean targetBean = null;
         for (BasketBean bean : basket) { 
-            if (bean.getId().equals(id)) {
-                targetBean = bean;
-                break;
+            if (bean.getId().equals(beanFromForm.getId())) {
+                
+                if (bean.getOrderNum() > 1) {
+                    bean.setOrderNum(bean.getOrderNum() - 1);
+                } else {
+                   
+                    basket.remove(bean);
+                }
+                
+                
+                if (basket.isEmpty() == true) {
+                    session.removeAttribute("basketBeans");
+                } else {
+                    session.setAttribute("basketBeans", basket);
+                }
+                
+                
+                return "redirect:/client/basket/list";
             }
-        }
-
-        if (targetBean != null) {
-            if (targetBean.getOrderNum() > 1) {
-                int newOrderNum = targetBean.getOrderNum() - 1;
-                targetBean.setOrderNum(newOrderNum);
-            } else {
-                basket.remove(targetBean);
-            }
-        }
-        
-        if (basket.isEmpty() == true) {
-            session.removeAttribute("basketBeans");
-        } else {
-            session.setAttribute("basketBeans", basket);
         }
         
         return "redirect:/client/basket/list";
