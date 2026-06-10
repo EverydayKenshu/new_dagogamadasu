@@ -25,7 +25,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 */
 	@Query("SELECT i FROM Item i INNER JOIN i.category c WHERE i.deleteFlag =:deleteFlag ORDER BY i.insertDate DESC,i.id DESC")
 	Page<Item> findByDeleteFlagOrderByInsertDateDescPage(
-	        @Param(value = "deleteFlag") int deleteFlag, Pageable pageable);
+			@Param(value = "deleteFlag") int deleteFlag, Pageable pageable);
 
 	/**
 	 * 商品IDと削除フラグを条件に検索（管理者機能で利用）
@@ -42,4 +42,21 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	 * @return 商品エンティティ
 	 */
 	public Item findByNameAndDeleteFlag(String name, int notDeleted);
+
+	//	追加
+	//	一覧表の売れ筋順
+	@Query(" SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.deleteFlag = :deleteFlag GROUP BY i ORDER BY COUNT(oi) DESC, i.id DESC ")
+	Page<Item> findByOrderCountDesc(@Param("deleteFlag") int deleteFlag, Pageable pageable);
+
+	//カテゴリの新着
+	@Query("SELECT i FROM Item i INNER JOIN i.category c WHERE i.category.id = :categoryId  AND i.deleteFlag = :deleteFlag ORDER BY i.insertDate DESC, i.id DESC")
+	Page<Item> findCategoryOrderByInsertDateDesc(@Param("deleteFlag") Integer deleteFlag,
+			@Param("categoryId") Integer categoryId,
+			Pageable pageable);
+
+	//	カテゴリの売れ筋
+	@Query("SELECT i FROM Item i LEFT JOIN i.orderItemList oi WHERE i.category.id = :categoryId  AND i.deleteFlag = :deleteFlag GROUP BY i ORDER BY COUNT(oi) DESC, i.id DESC ")
+	Page<Item> findByCategoryOrderCountDesc(@Param("deleteFlag") Integer deleteFlag,
+			@Param("categoryId") Integer categoryId,
+			Pageable pageable);
 }
