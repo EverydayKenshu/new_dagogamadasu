@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import jakarta.servlet.http.HttpSession;
 import jp.co.sss.shop.bean.BasketBean;
@@ -73,6 +75,16 @@ public class ClientBasketController {
 
         return "client/basket/list";
     }
+    
+	/**
+	 * 住所入力画面から買い物かご画面へ戻る処理(POST)
+	 * @return "redirect:/client/basket/list"
+	 */
+	@RequestMapping(path = "/client/basket/list", method = RequestMethod.POST)
+	public String viewBasket() {
+
+		return "client/basket/list";
+	}
 
     /**
      * 2. 買い物かご商品追加

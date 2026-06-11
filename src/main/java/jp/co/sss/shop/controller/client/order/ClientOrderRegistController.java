@@ -233,7 +233,18 @@ public class ClientOrderRegistController {
 		model.addAttribute("total", total);
 		return "/client/order/check";
 	}
-
+	
+	/**
+	 * 注文確認画面から支払方法入力画面へ戻る処理(POST)
+	 * @return "redirect:/client/order/payment/input"
+	 */
+	@RequestMapping(path = "/client/order/payment/back", method = RequestMethod.POST)
+	public String registPaymentBack() {
+		// 支払い方法選択画面（または仕様に従い住所入力画面）へリダイレクト
+		// ※ご提示の仕様ではリダイレクト先が "/client/order/address/input" となっています
+		return "redirect:/client/order/address/input";
+	}
+	
 	/**
 	 * 注文完了処理(POST)
 	 * @return "redirect:/client/order/complete" または "redirect:/client/order/check"
