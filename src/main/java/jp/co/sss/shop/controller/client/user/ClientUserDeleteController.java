@@ -55,6 +55,7 @@ public class ClientUserDeleteController {
 		session.invalidate();
 		return "redirect:/client/user/delete/complete";
 	}
+	
 	//退会確認完了画面を表示するメソッド
 	@RequestMapping(path = "/client/user/delete/complete", method = RequestMethod.GET)
 	public String userDeleteCompleteGet() {
