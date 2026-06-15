@@ -12,15 +12,28 @@
 	<h2 th:class="title" th:text="#{item}+#{title.list}"></h2>
 
 	<div class="sorted_by">
+
+		<!-- 新着順が現在選択中の場合は文字だけ表示する -->
 		<span th:if="${sortType==1}" th:text="#{sort.latest.str}"></span>
-		<a th:unless="${sortType==1}" th:href="@{/client/item/list/1(categoryId=${categoryId})}"
-			th:text="#{sort.latest.str}"></a>
+	
+		<!-- 新着順が未選択の場合は、お気に入り保存対象リンクとして表示する -->
+		<a th:unless="${sortType==1}"
+		   th:href="@{/client/item/list/1(categoryId=${categoryId})}"
+		   th:text="#{sort.latest.str}"
+		   class="favorite-save-link"></a>
+	
+		<!-- 売れ筋順が現在選択中の場合は文字だけ表示する -->
 		<span th:if="${sortType==2}" th:text="#{sort.hotsell.str}"></span>
-		<a th:unless="${sortType==2}" th:href="@{/client/item/list/2(categoryId=${categoryId})}"
-			th:text="#{sort.hotsell.str}"></a>
-
+	
+		<!-- 売れ筋順が未選択の場合は、お気に入り保存対象リンクとして表示する -->
+		<a th:unless="${sortType==2}"
+		   th:href="@{/client/item/list/2(categoryId=${categoryId})}"
+		   th:text="#{sort.hotsell.str}"
+		   class="favorite-save-link"></a>
+	
+		<!-- 商品が存在しない場合のメッセージを表示する -->
 		<p th:text="#{msg.client.item.list.none}" th:if="${#lists.isEmpty(items)}"></p>
-
+	
 	</div>
 
 
@@ -31,6 +44,7 @@
 				<th th:text="#{data.item.name}"></th>
 				<th th:text="#{data.item.price}"></th>
 				<th th:text="#{category}"></th>
+				<th th:text="#{data.item.favorite}"></th>
 			</tr>
 			<!--/* 商品一覧 */-->
 			<tr th:each="item, status: ${items}">
@@ -39,13 +53,49 @@
 					<img th:src="@{/images/common/no_image.jpg}" th:if="${item.image == null}" />
 
 				</td>
-				<td><a th:href="@{/client/item/detail/{id}(id=${item.id})}" th:text="${item.name}"></a></td>
+				<td>
+					<form th:action="@{/client/item/detail/{id}(id=${item.id})}" method="post">
+						<input type="hidden" name="favoriteChanges" class="favoriteChangesFormValue">
+						<button type="submit"onclick="copyFavoriteChanges(this)"class="link_button"th:text="${item.name}">
+						</button>
+					</form>
+				</td>
 				<td th:text="${item.price}"></td>
 				<td th:text="${item.category.name}"></td>
+				
+				<!-- ログイン済みユーザー用のお気に入り欄 -->
+				<td class="image" th:if="${session.user != null}">
+				
+					<!-- お気に入り済みの場合は赤ハートを表示する -->
+					<img th:if="${favoriteMap != null and favoriteMap[item.id] == true}"
+						 th:src="@{/images/red.png}"
+						 th:data-item-id="${item.id}"
+						 onclick="toggleFavorite(this)"
+						 class="favorite-heart">
+				
+					<!-- お気に入り未登録の場合は灰色ハートを表示する -->
+					<img th:unless="${favoriteMap != null and favoriteMap[item.id] == true}"
+						 th:src="@{/images/gray.png}"
+						 th:data-item-id="${item.id}"
+						 onclick="toggleFavorite(this)"
+						 class="favorite-heart">
+				
+				</td>
+				
+				<!-- 未ログインユーザー用のお気に入り欄 -->
+				<td class="image" th:if="${session.user == null}">
+				
+					<!-- 未ログイン時は灰色ハートを表示し、クリック時にログイン画面へ遷移する -->
+					<img th:src="@{/images/gray.png}"
+						 onclick="location.href='/shared_shop/login'"
+						 class="favorite-heart">
+				
+				</td>
 			</tr>
 		</table>
 	</th:block>
-
+	<!-- お気に入り変更内容を一時的に保存するhidden -->
+	<input type="hidden" id="favoriteChanges" name="favoriteChanges">
 </body>
 
 </html>

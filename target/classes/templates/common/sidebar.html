@@ -10,20 +10,64 @@
 		<h2 th:class="title" th:text="#{category.select.title}"></h2>
 		<div class="form">
 			<!-- 商品一覧画面以外で表示 -->
-			<form th:if="${sortType == null}" th:action="@{/client/item/list/1}">
+			<form th:if="${sortType == null}"
+				  th:action="@{/client/favorite/save-and-redirect}"
+				  method="post"
+				  onsubmit="return setCategorySearchRedirect(this, 1)">
+			
 				<select name="categoryId">
-					<option th:value="#{constants.category.select.none.no}" th:text="#{constants.category.select.none}"></option>
+					<option th:value="#{constants.category.select.none.no}"
+							th:text="#{constants.category.select.none}">
+					</option>
+			
 					<option th:each="category: ${categories}"
-						th:value="${category.id}" th:text="${category.name}"></option>
-				</select> <input type="submit" th:value="#{select}" />
+							th:value="${category.id}"
+							th:text="${category.name}">
+					</option>
+				</select>
+			
+				<!-- お気に入り変更内容 -->
+				<input type="hidden"
+					   name="favoriteChanges"
+					   class="favoriteChangesFormValue">
+			
+				<!-- 遷移先URL -->
+				<input type="hidden"
+					   name="redirectUrl"
+					   class="redirectUrlValue">
+			
+				<input type="submit" th:value="#{select}" />
 			</form>
+			
 			<!-- 商品一覧画面上で表示 -->
-			<form th:unless="${sortType == null}" th:action="@{/client/item/list/} + ${sortType}">
+			<form th:unless="${sortType == null}"
+				  th:action="@{/client/favorite/save-and-redirect}"
+				  method="post"
+				  th:onsubmit="|return setCategorySearchRedirect(this, ${sortType})|">
+			
 				<select name="categoryId">
-					<option th:value="#{constants.category.select.none.no}" th:text="#{constants.category.select.none}"></option>
+					<option th:value="#{constants.category.select.none.no}"
+							th:text="#{constants.category.select.none}">
+					</option>
+			
 					<option th:each="category: ${categories}"
-						th:value="${category.id}" th:text="${category.name}" th:selected="${category.id} == ${categoryId}"></option>
-				</select> <input type="submit" th:value="#{select}" />
+							th:value="${category.id}"
+							th:text="${category.name}"
+							th:selected="${category.id} == ${categoryId}">
+					</option>
+				</select>
+			
+				<!-- お気に入り変更内容 -->
+				<input type="hidden"
+					   name="favoriteChanges"
+					   class="favoriteChangesFormValue">
+			
+				<!-- 遷移先URL -->
+				<input type="hidden"
+					   name="redirectUrl"
+					   class="redirectUrlValue">
+			
+				<input type="submit" th:value="#{select}" />
 			</form>
 		</div>
 	</div>

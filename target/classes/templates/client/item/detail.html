@@ -13,9 +13,39 @@
 
 	<div class="info_form_area" th:object="${item}">
 		<div class="item_detail_area">
-			<div class="item_image_area">
-				<img th:if="*{image != null}" th:src="@{/images/{image}(image=*{image})}"></img>
-				<img th:if="*{image == null}" th:src="@{/images/common/no_image.jpg}"></img>
+			<!-- 商品画像とハート画像を重ねるための親要素 -->
+			<div class="item_image_area item_image_favorite_area">
+
+				<!-- 商品画像がある場合、商品画像を表示する -->
+				<img th:if="*{image != null}"
+					 th:src="@{/images/{image}(image=*{image})}"
+					 class="item-main-image">
+			
+				<!-- 商品画像がない場合、no_image画像を表示する -->
+				<img th:if="*{image == null}"
+					 th:src="@{/images/common/no_image.jpg}"
+					 class="item-main-image">
+			
+				<!-- ログイン済みの場合のお気に入り登録済みハート -->
+				<img th:if="${session.user != null and favorite}"
+					 th:src="@{/images/red.png}"
+					 th:data-item-id="${item.id}"
+					 onclick="toggleFavorite(this)"
+					 class="favorite-heart-detail">
+				
+				<!-- ログイン済みの場合のお気に入り未登録ハート -->
+				<img th:if="${session.user != null and !favorite}"
+					 th:src="@{/images/gray.png}"
+					 th:data-item-id="${item.id}"
+					 onclick="toggleFavorite(this)"
+					 class="favorite-heart-detail">
+				
+				<!-- 未ログインの場合の灰色ハート -->
+				<img th:if="${session.user == null}"
+					 th:src="@{/images/gray.png}"
+					 onclick="location.href='/shared_shop/login'"
+					 class="favorite-heart-detail">
+			
 			</div>
 			<dl class="item_detail_list">
 				<dt>[[#{data.item.name}]]</dt>
@@ -34,14 +64,53 @@
 		</div>
 		<div class="detail_button_area">
 			<form th:action="@{/client/basket/add}" method="post" class="user_info_form" th:if="*{stock > 0}">
+
+				<!-- 商品IDを送信するためのhidden -->
 				<input type="hidden" th:field="*{id}" />
-				<input type="submit" value="買い物かごに入れる" class="send_button" />
+			
+				<!-- お気に入り変更内容を送信するためのhidden -->
+				<input type="hidden" name="favoriteChanges" class="favoriteChangesFormValue">
+			
+				<!-- 送信前にお気に入り変更内容をフォームへコピーするボタン -->
+				<input type="submit"
+					   value="買い物かごに入れる"
+					   class="send_button"
+					   onclick="copyFavoriteChanges(this)" />
+			
 			</form>
-			<form th:action="@{/client/item/list/1}" method="post">
-				<input type="submit" value="戻る" class="back_button" />
+			<!-- お気に入り一覧から来た場合の戻るボタン -->
+			<form th:if="${backPage == 'favorite'}"
+				  th:action="@{/client/favorite/list}"
+				  method="post">
+			
+				<!-- お気に入り変更内容を送信するhidden -->
+				<input type="hidden" name="favoriteChanges" class="favoriteChangesFormValue">
+			
+				<!-- 戻るボタン -->
+				<input type="submit"
+					   value="戻る"
+					   class="back_button"
+					   onclick="copyFavoriteChanges(this)">
+			</form>
+			
+			<!-- 通常の商品一覧へ戻るボタン -->
+			<form th:unless="${backPage == 'favorite'}"
+				  th:action="@{/client/item/list/1}"
+				  method="post">
+			
+				<!-- お気に入り変更内容を送信するhidden -->
+				<input type="hidden" name="favoriteChanges" class="favoriteChangesFormValue">
+			
+				<!-- 戻るボタン -->
+				<input type="submit"
+					   value="戻る"
+					   class="back_button"
+					   onclick="copyFavoriteChanges(this)">
 			</form>
 		</div>
 	</div>
+	<!-- お気に入り変更内容を一時的に保存するhidden -->
+	<input type="hidden" id="favoriteChanges" name="favoriteChanges">
 
 </body>
 

@@ -365,12 +365,13 @@ li.error_msg  {
 .item_image_area {
 	width: 45%;
 }
-.item_image_area img{
-	width: 100%;
-	max-width: 300px;	
-	height: auto;
-	max-height: 300px;
-}
+/* 商品画像だけに適用する */
+/*.item_image_area .item-main-image {*/
+/*	width: 100%;*/
+/*	max-width: 300px;*/
+/*	height: auto;*/
+/*	max-height: 300px;*/
+/*}*/
 .item_input_area img{
 	width: 100%;
 	max-width: 300px;	
@@ -715,5 +716,44 @@ p.link_center {
 .paging a{
 	display: block;
 }
+
+
+.link_button {
+	background: none;
+	border: none;
+	padding: 0;
+	color: #0000EE;
+	text-decoration: underline;
+	cursor: pointer;
+	font: inherit;
+}
+
+/* 商品画像とハート画像を重ねる親要素 */
+.item_image_favorite_area {
+	position: relative;
+	display: inline-block;
+	width: 45%;
+}
+
+/* 商品詳細画面の商品画像 */
+.item_image_favorite_area .item-main-image {
+	width: 100%;
+	max-width: 300px;
+	height: auto;
+	max-height: 300px;
+	display: block;
+}
+
+/* 商品詳細画面のハート画像 */
+.item_image_favorite_area .favorite-heart-detail {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	width: 70px;
+	height: 70px;
+	cursor: pointer;
+	z-index: 10;
+}
+
 
 

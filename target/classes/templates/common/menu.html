@@ -7,13 +7,24 @@
 
 <body>
 	<ul th:fragment="layout-menu" th:class="navi_menu">
-		<li><a th:href="@{/}" th:text="#{top}"></a></li>
-		<li><a th:href="@{/client/item/list/1}" th:text="#{item}+#{title.list}"></a></li>
-		<li><a th:href="@{/client/basket/list}" th:text="#{basket}"></a></li>
+		<!-- トップ画面へ遷移するリンク -->
+		<li><a th:href="@{/}" th:text="#{top}" class="favorite-save-link"></a></li>
+		
+		<!-- 商品一覧画面へ遷移するリンク -->
+		<li><a th:href="@{/client/item/list/1}" th:text="#{item}+#{title.list}" class="favorite-save-link"></a></li>
+		
+		<!-- 買い物かご画面へ遷移するリンク -->
+		<li><a th:href="@{/client/basket/list}" th:text="#{basket}" class="favorite-save-link"></a></li>
+		
+		<!-- お気に入り一覧画面へ遷移するリンク -->
+		<li><a th:href="@{/client/favorite/list}" th:text="#{favorite}+#{title.list}" class="favorite-save-link"></a></li>
+		
+		<!-- ログイン済みの場合だけ表示する範囲 -->
 		<th:block th:if="${session.user != null}">
-<!--			お気に入り機能用メニューボタン			-->
-			<li><a th:href="@{/client/favorite/list}" th:text="#{favorite}+#{title.list}"></a></li>
-			<li><a th:href="@{/client/order/list}" th:text="#{order}+#{title.list}"></a></li>
+		
+			<!-- 注文一覧画面へ遷移するリンク -->
+			<li><a th:href="@{/client/order/list}" th:text="#{order}+#{title.list}" class="favorite-save-link"></a></li>
+		
 		</th:block>
 	</ul>
 </body>

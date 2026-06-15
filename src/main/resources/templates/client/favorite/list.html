@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{common/layout_5block :: layout(~{::title},~{::body/content()})}">
+
+<head>
+	<title th:text="#{favorite}+#{title.list}+' | '+ #{shop.title}"> </title>
+	<meta charset="UTF-8" />
+</head>
+
+<body class="user item_list">
+
+	<h2 th:class="title" th:text="#{favorite}+#{title.list}"></h2>
+
+	<p th:if="${#lists.isEmpty(favorites)}">
+		お気に入り商品はありません。
+	</p>
+
+	<th:block th:if="!${#lists.isEmpty(favorites)}">
+		<table class="list_table item_detail">
+			<tr>
+				<th th:text="#{data.item.image}"></th>
+				<th th:text="#{data.item.name}"></th>
+				<th th:text="#{data.item.price}"></th>
+				<th th:text="#{category}"></th>
+				<th th:text="#{data.item.favorite}"></th>
+			</tr>
+
+			<tr th:each="favorite : ${favorites}">
+				
+				<td class="image">
+					<img th:src="@{/images/{image}(image=${favorite.item.image})}"
+						 th:if="${favorite.item.image != null}" />
+					<img th:src="@{/images/common/no_image.jpg}"
+						 th:if="${favorite.item.image == null}" />
+				</td>
+
+				<td>
+				
+					<!-- 商品詳細画面へ遷移するためのフォーム -->
+					<form th:action="@{/client/item/detail/{id}(id=${favorite.item.id})}" method="post">
+					
+						<!-- 戻る先がお気に入り一覧であることを送る -->
+						<input type="hidden" name="backPage" value="favorite">
+					
+						<!-- お気に入り変更内容を送信するためのhidden -->
+						<input type="hidden" name="favoriteChanges" class="favoriteChangesFormValue">
+					
+						<!-- 商品名ボタン -->
+						<button type="submit"
+								onclick="copyFavoriteChanges(this)"
+								class="link_button"
+								th:text="${favorite.item.name}">
+						</button>
+					
+					</form>
+				
+				</td>
+
+				<td th:text="${favorite.item.price}"></td>
+
+				<td th:text="${favorite.item.category.name}"></td>
+
+				<td class="image">
+
+					<!-- お気に入り一覧では最初は必ず赤ハートを表示する -->
+					<img th:src="@{/images/red.png}"
+						 th:data-item-id="${favorite.item.id}"
+						 onclick="toggleFavorite(this)"
+						 class="favorite-heart">
+				
+				</td>
+			</tr>
+		</table>
+	</th:block>
+
+	<!-- お気に入り変更内容を一時的に保存するhidden -->
+	<input type="hidden" id="favoriteChanges" name="favoriteChanges">
+
+</body>
+
+</html>
