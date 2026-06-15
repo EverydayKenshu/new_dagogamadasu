@@ -28,6 +28,7 @@ import jp.co.sss.shop.repository.OrderRepository;
 import jp.co.sss.shop.repository.UserRepository;
 import jp.co.sss.shop.service.BeanTools;
 import jp.co.sss.shop.service.PriceCalc;
+import jp.co.sss.shop.util.Constant;
 
 /**
  * 注文管理 注文登録機能(一般会員向け用)のコントローラクラス
@@ -90,7 +91,11 @@ public class ClientOrderRegistController {
 		if (orderForm == null) {
 			orderForm = new OrderForm();
 			// ログインユーザの住所情報を初期セット
-			UserBean user = (UserBean) session.getAttribute("user");
+			//ログインからセッション情報を取得
+			Integer id = ((UserBean) session.getAttribute("user")).getId();
+			// 表示対象の情報を取得
+			User user = userRepository.findByIdAndDeleteFlag(id, Constant.NOT_DELETED);
+			
 			if (user != null) {
 				orderForm.setId(user.getId());
 				orderForm.setPostalCode(user.getPostalCode());
@@ -115,13 +120,12 @@ public class ClientOrderRegistController {
 		if (orderForm == null) {
 			return "redirect:/syserror";
 		}
-
+		
 		BindingResult result = (BindingResult) session.getAttribute("result");
 		if (result != null) {
 			model.addAttribute("org.springframework.validation.BindingResult.orderForm", result);
 			session.removeAttribute("result");
 		}
-
 		model.addAttribute("orderForm", orderForm);
 
 		return "/client/order/address_input";
@@ -138,7 +142,7 @@ public class ClientOrderRegistController {
 		if (lastForm == null) {
 			return "redirect:/syserror";
 		}
-
+		
 		// セッションにフォームを保持
 		session.setAttribute("orderForm", form);
 
@@ -160,6 +164,8 @@ public class ClientOrderRegistController {
 		if (orderForm == null) {
 			return "redirect:/syserror";
 		}
+		
+		model.addAttribute("payMethod", 1);
 
 		model.addAttribute("orderForm", orderForm);
 		return "/client/order/payment_input";
