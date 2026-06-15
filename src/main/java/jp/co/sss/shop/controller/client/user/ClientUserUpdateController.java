@@ -117,6 +117,18 @@ public class ClientUserUpdateController {
 		user.setAuthority(userForm.getAuthority());
 		//ログインしているuser情報を更新する
 		userRepository.save(user);
+		UserBean userBean = (UserBean) session.getAttribute("user");
+		//もしuserBeanがnullかどうか確認する
+		if (userBean != null) {
+			// 画面から入力された新しい名前をセット
+			userBean.setName(userForm.getName());
+			// 新しい名前に書き換えたオブジェクトをセッションに上書き保存
+			session.setAttribute("user", userBean);
+		}
+		// 不要になった入力フォーム用のセッションを削除
+		session.removeAttribute("userForm");
+
+	
 		return "redirect:/client/user/update/complete";
 	}
 	//変更完了画面へ遷移するメソッド
@@ -125,8 +137,7 @@ public class ClientUserUpdateController {
 		return "client/user/update_complete";
 	}
 	
-	
-	
+
 	
 	
 	
